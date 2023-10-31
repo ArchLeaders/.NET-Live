@@ -19,6 +19,7 @@
     <PackageReference Include="AvaloniaEdit.TextMate" Version="11.0.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.7.0" />
+    <PackageReference Include="NuGet.Protocol" Version="6.7.0" />
     <PackageReference Include="Projektanker.Icons.Avalonia" Version="8.3.0" />
     <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="8.3.0" />
     <PackageReference Include="TextMateSharp.Grammars" Version="1.0.56" />

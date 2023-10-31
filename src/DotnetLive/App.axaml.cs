@@ -13,12 +13,20 @@ namespace DotnetLive;
 
 public partial class App : Application
 {
+    public static SettingsViewModel Settings { get; } = SettingsViewModel.Load();
+
     public static Task LoadRoslyn { get; } = Task.Run(async () => {
         await CSharpScript.EvaluateAsync("""
             using System;
             
             Console.WriteLine("[Roslyn Initialized]");
             """, ScriptOptions.Default);
+    });
+
+    public static Task RestorePackages { get; } = Task.Run(async () => {
+        await Settings.RestoreNuGetPackages();
+        Settings.Apply();
+        await Console.Out.WriteLineAsync("[Packages Restored]");
     });
 
     public override void Initialize()

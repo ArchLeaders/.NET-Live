@@ -3,10 +3,14 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DotnetLive.Helpers;
 using DotnetLive.Models;
 using DotnetLive.Views;
+using Microsoft.CodeAnalysis.Scripting;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DotnetLive.ViewModels;
 
@@ -28,15 +32,22 @@ public partial class SettingsViewModel : ObservableObject
         return result;
     }
 
+    [JsonIgnore]
+    public ScriptOptions ScriptOptions { get; private set; } = ScriptOptions.Default
+        .AddReferences(typeof(ShellViewModel).Assembly
+            .GetReferencedAssemblies()
+            .Select((x) => Assembly.Load(x.FullName))
+    );
+
     [ObservableProperty]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private ImportedAssemblies _assemblies = new();
 
     [ObservableProperty]
     private ObservableCollection<NuGetPackage> _packages = new();
 
     [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private async Task ImportAssembly()
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
@@ -59,14 +70,14 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private void DeleteAssembly(string name)
     {
         Assemblies.Delete(name);
     }
 
     [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private void AddPackage(string name)
     {
         if (!string.IsNullOrEmpty(name)) {
@@ -77,28 +88,21 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private void RemovePackage(NuGetPackage package)
     {
         Packages.Remove(package);
     }
 
     [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
-    private static void Restore()
-    {
-        // TODO: Restore NuGet packages and dependencies
-    }
-
-    [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private static void Cancel(SettingsView view)
     {
         view.Close();
     }
 
     [RelayCommand]
-    [property: System.Text.Json.Serialization.JsonIgnore]
+    [property: JsonIgnore]
     private async Task Save(SettingsView view)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(_path) ?? string.Empty);
@@ -106,7 +110,25 @@ public partial class SettingsViewModel : ObservableObject
         using FileStream fs = File.Create(_path);
         await JsonSerializer.SerializeAsync(fs, this);
 
-        view.Apply();
+        Apply();
         view.Close();
+    }
+
+    public async Task RestoreNuGetPackages()
+    {
+        NuGetHelper.DeleteLocalRepo();
+
+        await Parallel.ForEachAsync(Packages.DistinctBy(x => x.Name), async (package, token) => {
+            await package.Restore();
+        });
+    }
+
+    public void Apply()
+    {
+        ScriptOptions = ScriptOptions
+            .AddReferences(NuGetHelper.PathCache.Select((x) => {
+                Console.WriteLine(x);
+                return Assembly.LoadFrom(x);
+            }));
     }
 }

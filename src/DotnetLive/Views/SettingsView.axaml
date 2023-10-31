@@ -110,11 +110,6 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto">
-            <StackPanel Orientation="Horizontal" Spacing="5">
-                <Button Command="{Binding RestoreCommand}"
-                        Content="Restore all Packages"
-                        ToolTip.Tip="Clears the NuGet cache and restores every listed package.&#x0A;&#x0A;This operation may take a while depending on your internet speed." />
-            </StackPanel>
             <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
                         Spacing="5">

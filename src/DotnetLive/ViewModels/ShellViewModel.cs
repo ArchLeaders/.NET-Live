@@ -44,10 +44,11 @@ public partial class ShellViewModel : ObservableObject
     private async Task Execute(TextEditor editor)
     {
         await App.LoadRoslyn;
+        await App.RestorePackages;
         await Console.Out.WriteLineAsync($"[Executing Script]\n");
 
         try {
-            object? result = await CSharpScript.EvaluateAsync(editor.Text, _roslynDefaultOptions);
+            object? result = await CSharpScript.EvaluateAsync(editor.Text, App.Settings.ScriptOptions);
             string? textResult = result?.ToString();
             await Console.Out.WriteLineAsync(
                 $"\n{(string.IsNullOrEmpty(textResult) ? "Execution returned void" : textResult)}");
@@ -126,12 +127,12 @@ public partial class ShellViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenSettings(ContentControl overflow)
+    private static void OpenSettings(ContentControl overflow)
     {
         overflow.Content = new SettingsView {
             Close = () => overflow.Content = null,
             Apply = () => { },
-            DataContext = _settings
+            DataContext = App.Settings
         };
     }
 }
