@@ -1,0 +1,143 @@
+<UserControl x:Class="DotnetLive.Views.ShellView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avalonia-edit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:converters="clr-namespace:DotnetLive.Converters;assembly=DotnetLive"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:fa="https://github.com/projektanker/icons.avalonia"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="using:System"
+             xmlns:vm="clr-namespace:DotnetLive.ViewModels;assembly=DotnetLive"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             x:DataType="vm:ShellViewModel"
+             Background="{DynamicResource SystemChromeLowColor}"
+             FontFamily="{StaticResource FiraSans}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:TruncatedStringConverter x:Key="TruncatedStringConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid RowDefinitions="Auto,*,Auto,0.5*,Auto">
+            <Border Margin="10,10,10,5" ToolTip.Tip="{Binding Context}">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <TextBlock FontSize="11"
+                               Opacity="0.7"
+                               Text="{Binding Context, Converter={StaticResource TruncatedStringConverter}}" />
+                </Grid>
+            </Border>
+            <Border Grid.Row="1"
+                    Margin="10,0,10,0"
+                    Padding="5"
+                    BorderBrush="{DynamicResource SystemAccentColor}"
+                    BorderThickness="1"
+                    CornerRadius="3">
+                <avalonia-edit:TextEditor Name="CodeEditor" FontFamily="{StaticResource UbuntuMono}" />
+            </Border>
+            <GridSplitter Grid.Row="2"
+                          MinHeight="10"
+                          Margin="13,0"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Opacity="0.5"
+                          ResizeDirection="Rows" />
+            <Grid Grid.Row="3" ColumnDefinitions="*,Auto,*">
+                <Border Margin="10,0,0,5"
+                        Padding="5"
+                        Background="{DynamicResource TextControlBackground}"
+                        BorderBrush="{DynamicResource TextControlBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="3"
+                        ToolTip.Tip="Errors">
+                    <ListBox AutoScrollToSelectedItem="True"
+                             Background="Transparent"
+                             ItemsSource="{Binding Errors}"
+                             SelectedIndex="{Binding SelectedErrorIndex}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="system:Exception">
+                                <TextBlock FontSize="11"
+                                           Text="{Binding Message}"
+                                           ToolTip.Tip="{Binding}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+                <GridSplitter Grid.Column="1"
+                              MinWidth="10"
+                              Margin="0,8"
+                              Padding="5,0"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              ResizeDirection="Columns" />
+                <TextBox Grid.Column="2"
+                         Margin="0,0,10,5"
+                         Padding="5"
+                         CaretIndex="{Binding Output.Length - 1}"
+                         FontFamily="{StaticResource UbuntuMono}"
+                         FontSize="9"
+                         IsReadOnly="True"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         Text="{Binding Output}"
+                         ToolTip.Tip="Console Output" />
+            </Grid>
+            <Border Grid.Row="4" Background="{StaticResource SystemAccentColor}">
+                <Grid Margin="5" ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="5">
+                        <Button Classes="Icon"
+                                Command="{Binding ExecuteCommand}"
+                                CommandParameter="{Binding #CodeEditor}"
+                                ToolTip.Tip="Execute Script">
+                            <fa:Icon Value="fa-play" />
+                        </Button>
+                        <Border Classes="Splitter" />
+                        <Button Classes="Icon"
+                                Command="{Binding ClearErrorsCommand}"
+                                ToolTip.Tip="Clear Errors">
+                            <fa:Icon Value="fa-bug-slash" />
+                        </Button>
+                        <Button Classes="Icon"
+                                Command="{Binding ClearOutputCommand}"
+                                ToolTip.Tip="Clear Output">
+                            <fa:Icon Value="fa-broom" />
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="5">
+                        <Button Classes="Icon"
+                                Command="{Binding SaveCommand}"
+                                CommandParameter="{Binding #CodeEditor}"
+                                ToolTip.Tip="Save C# Source File">
+                            <fa:Icon Value="fa-floppy-disk" />
+                        </Button>
+                        <Button Classes="Icon"
+                                Command="{Binding ImportCommand}"
+                                CommandParameter="{Binding #CodeEditor}"
+                                ToolTip.Tip="Import C# Source File">
+                            <fa:Icon Value="fa-file-import" />
+                        </Button>
+                        <Border Classes="Splitter" />
+                        <Button Classes="Icon"
+                                Command="{Binding InfoCommand}"
+                                ToolTip.Tip="Help &amp; Info">
+                            <fa:Icon Value="fa-info" />
+                        </Button>
+                        <Border Classes="Splitter" />
+                        <Button Classes="Icon"
+                                Command="{Binding OpenSettingsCommand}"
+                                CommandParameter="{Binding #OverflowView}"
+                                ToolTip.Tip="Settings">
+                            <fa:Icon Value="fa-cog" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <Grid>
+            <ContentControl Name="OverflowView" />
+        </Grid>
+    </Grid>
+</UserControl>

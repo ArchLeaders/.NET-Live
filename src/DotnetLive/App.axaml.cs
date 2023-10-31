@@ -2,14 +2,25 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-
 using DotnetLive.ViewModels;
 using DotnetLive.Views;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.FontAwesome;
 
 namespace DotnetLive;
 
 public partial class App : Application
 {
+    public static Task LoadRoslyn { get; } = Task.Run(async () => {
+        await CSharpScript.EvaluateAsync("""
+            using System;
+            
+            Console.WriteLine("[Roslyn Initialized]");
+            """, ScriptOptions.Default);
+    });
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -17,22 +28,19 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // Line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and CT
         BindingPlugins.DataValidators.RemoveAt(0);
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel()
+        IconProvider.Current
+            .Register(new FontAwesomeIconProvider());
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+            desktop.MainWindow = new ShellWindow {
+                DataContext = new ShellViewModel()
             };
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform) {
+            singleViewPlatform.MainView = new ShellView {
+                DataContext = new ShellViewModel()
             };
         }
 

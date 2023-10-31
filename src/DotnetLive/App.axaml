@@ -1,10 +1,32 @@
-<Application xmlns="https://github.com/avaloniaui"
+<Application x:Class="DotnetLive.App"
+             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="DotnetLive.App"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
+    <Application.Resources>
+        <FontFamily x:Key="FiraSans">/Assets/Fonts/Fira-Sans/#Fira Sans</FontFamily>
+        <FontFamily x:Key="UbuntuMono">/Assets/Fonts/Ubuntu-Mono/#Ubuntu Mono</FontFamily>
+    </Application.Resources>
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+        <Style Selector="Button.Icon">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.Splitter">
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark1}" />
+            <Setter Property="Margin" Value="0,3" />
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="3" />
+            <Setter Property="Margin" Value="0,1.5" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="3" />
+        </Style>
     </Application.Styles>
 </Application>
