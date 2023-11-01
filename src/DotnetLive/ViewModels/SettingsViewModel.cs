@@ -129,8 +129,11 @@ public partial class SettingsViewModel : ObservableObject
     public void Apply()
     {
         ScriptOptions = ScriptOptions
-            .AddReferences(NuGetHelper.PathCache.Select(Assembly.LoadFrom));
+            .AddReferences(NuGetHelper.PathCache
+                .Select(Assembly.LoadFrom)
+                .Concat(Assemblies.Cache));
 
+        Assemblies.Cache.Clear();
         NuGetHelper.PathCache.Clear();
     }
 }
