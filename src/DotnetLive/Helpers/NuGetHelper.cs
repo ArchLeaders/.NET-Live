@@ -32,7 +32,9 @@ public static class NuGetHelper
 
     public static void DeleteLocalRepo()
     {
-        Directory.Delete(_path, true);
+        if (Directory.Exists(_path)) {
+            Directory.Delete(_path, true);
+        }
     }
 
     public static async Task<bool> TryDownloadPackage(string name, string? expectedVersion = null, string? source = null, CancellationToken? cancellationToken = null)
@@ -55,7 +57,9 @@ public static class NuGetHelper
         }
 
         if (version == null) {
-            await Console.Out.WriteLineAsync($"[Restore] Package '{name}' not found on source '{repo.PackageSource.Source}'");
+            Console.ForegroundColor = ConsoleColor.Red;
+            await Console.Out.WriteLineAsync($"[Restore Failed] The package '{name}' could not be found in the source '{repo.PackageSource.Source}'");
+            Console.ResetColor();
             return false;
         }
 
