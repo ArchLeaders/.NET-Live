@@ -5,29 +5,15 @@ using Avalonia.Platform.Storage;
 using AvaloniaEdit;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DotnetLive.Models;
 using DotnetLive.Views;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Scripting;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using System.Text;
 
 namespace DotnetLive.ViewModels;
 
 public partial class ShellViewModel : ObservableObject
 {
-    private readonly SettingsViewModel _settings = SettingsViewModel.Load();
-    private readonly ScriptOptions _roslynDefaultOptions = ScriptOptions.Default.AddReferences(
-        typeof(ShellViewModel).Assembly.GetReferencedAssemblies().Select((x) => Assembly.Load(x.FullName)));
-
-    public ShellViewModel()
-    {
-        Console.SetOut(new ShellViewWriter(this));
-    }
-
     [ObservableProperty]
     private string _context = Directory.GetCurrentDirectory();
 
@@ -36,9 +22,6 @@ public partial class ShellViewModel : ObservableObject
 
     [ObservableProperty]
     private int _selectedErrorIndex = -1;
-
-    [ObservableProperty]
-    private string _output = string.Empty;
 
     [RelayCommand]
     private async Task Execute(TextEditor editor)
@@ -68,9 +51,9 @@ public partial class ShellViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ClearOutput()
+    private static void ClearOutput()
     {
-        Output = string.Empty;
+        Console.Clear();
     }
 
     [RelayCommand]
