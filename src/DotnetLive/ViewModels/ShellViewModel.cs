@@ -28,17 +28,27 @@ public partial class ShellViewModel : ObservableObject
     {
         await App.LoadRoslyn;
         await App.RestorePackages;
-        await Console.Out.WriteLineAsync($"[Executing Script]\n");
+        Console.ForegroundColor = ConsoleColor.Blue;
+        await Console.Out.WriteLineAsync($"\n[Executing Script]");
+        Console.ResetColor();
 
         try {
             object? result = await CSharpScript.EvaluateAsync(editor.Text, App.Settings.ScriptOptions);
             string? textResult = result?.ToString();
-            await Console.Out.WriteLineAsync(
-                $"\n{(string.IsNullOrEmpty(textResult) ? "Execution returned void" : textResult)}");
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            await Console.Out.WriteLineAsync(
+                $"\nResult: '{(string.IsNullOrEmpty(textResult) ? "void" : textResult)}'");
+
+            Console.ResetColor();
             ClearErrors();
         }
         catch (Exception ex) {
+            Console.ForegroundColor = ConsoleColor.Red;
+            await Console.Out.WriteLineAsync("[Execution Failed]");
+            await Console.Out.WriteLineAsync(ex.ToString());
+            Console.ResetColor();
+            
             Errors.Add(ex);
             SelectedErrorIndex = Errors.Count - 1;
         }

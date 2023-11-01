@@ -19,14 +19,19 @@ public partial class App : Application
         await CSharpScript.EvaluateAsync("""
             using System;
             
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("[Roslyn Initialized]");
+            Console.ResetColor();
             """, ScriptOptions.Default);
     });
 
     public static Task RestorePackages { get; } = Task.Run(async () => {
         await Settings.RestoreNuGetPackages();
         Settings.Apply();
+
+        Console.ForegroundColor = ConsoleColor.Green;
         await Console.Out.WriteLineAsync("[Packages Restored]");
+        Console.ResetColor();
     });
 
     public override void Initialize()
