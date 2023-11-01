@@ -78,12 +78,15 @@ public partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     [property: JsonIgnore]
-    private void AddPackage(string name)
+    private async Task AddPackage(string name)
     {
         if (!string.IsNullOrEmpty(name)) {
-            Packages.Add(new NuGetPackage {
-                Name = name,
-            });
+            NuGetPackage pkg = new() {
+                Name = name
+            };
+
+            Packages.Add(pkg);
+            await pkg.Restore();
         }
     }
 
